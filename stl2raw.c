@@ -23,14 +23,18 @@ long fill_buffer(long abs_count, unsigned* state, int nstate)
 	return abs_count;
 }
 #define NSTATE 1
+#define MAXSTATE	6	/* 6 x DIO432 is max payload */
 
 int main(int argc, char* argv[])
 {
 	char aline[128];
 	int delta_times = 0;
 	long abs_count = 0;
-	unsigned old_state = 0;
+	unsigned old_state[MAXSTATE] = {};
 	FILE *fp_log = 0;
+	int nstate = 0;
+	int nstate0 = 0;
+	int nl = 0;
 
 	if (argc > 1){
 		fp_out = fopen(argv[1], "w");
@@ -43,8 +47,9 @@ int main(int argc, char* argv[])
 	}else{
 		fp_out = stdout;
 	}
-	while(fgets(aline, 128, stdin)){
-		unsigned count, state;
+	while(fgets(aline, 128, stdin) && ++nl){
+		unsigned count;
+		unsigned state[MAXSTATE];
 		char* pline = aline;
 
 		if (fp_log) {
@@ -56,15 +61,27 @@ int main(int argc, char* argv[])
 			pline = aline + 1;
 			delta_times = 1;	/* better make them all delta */
 		}
-		if (sscanf(pline, "%u,%x", &count, &state) == 2){
+		if ((nstate = sscanf(pline, "%u,%x,%x,%x,%x,%x,%x", &count,
+				state+0, state+1, state+2,
+				state+3, state+4, state+5) - 1) >= 1){
+			if (nstate0){
+				if (nstate != nstate0){
+					fprintf(stderr, "ERROR: line:%d state count change %d=>%d."
+							"Please apply state columns consistently\n",
+							nl, nstate0, nstate);
+					return -1;
+				}
+			}else{
+				nstate0 = nstate;
+			}
 			abs_count = expand_state(
-				abs_count, &old_state, NSTATE,
+				abs_count, old_state, nstate,
 				delta_times? abs_count+count: count);
-			old_state = state;
+			memcpy(old_state, state, sizeof(unsigned)*nstate);
 		}else{
 			fprintf(stderr, "scan failed\n");
 			return -1;
 		}
 	}
-	fill_buffer(abs_count, &old_state, NSTATE);
+	fill_buffer(abs_count, old_state, nstate);
 }
