@@ -4,24 +4,26 @@
 
 FILE *fp_out;
 
-long expand_state(long abs_count, unsigned state, 
+long expand_state(long abs_count, unsigned* state, int nstate,
 		long until_count)
 {
 	while(abs_count < until_count){
-		fwrite(&state, sizeof(state), 1, fp_out);
+		fwrite(state, sizeof(state), nstate, fp_out);
 		++abs_count;
 	}
 	return abs_count;
 }
 
-long fill_buffer(long abs_count, unsigned state)
+long fill_buffer(long abs_count, unsigned* state, int nstate)
 {
 	while((abs_count&0x0fffff) != 0){
-		fwrite(&state, sizeof(state), 1, fp_out);
+		fwrite(state, sizeof(state), nstate, fp_out);
 		++abs_count;
 	}
 	return abs_count;
 }
+#define NSTATE 1
+
 int main(int argc, char* argv[])
 {
 	char aline[128];
@@ -56,7 +58,7 @@ int main(int argc, char* argv[])
 		}
 		if (sscanf(pline, "%u,%x", &count, &state) == 2){
 			abs_count = expand_state(
-				abs_count, old_state, 
+				abs_count, &old_state, NSTATE,
 				delta_times? abs_count+count: count);
 			old_state = state;
 		}else{
@@ -64,5 +66,5 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 	}
-	fill_buffer(abs_count, old_state);
+	fill_buffer(abs_count, &old_state, NSTATE);
 }
