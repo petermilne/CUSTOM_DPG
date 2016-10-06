@@ -1,0 +1,6 @@
+#!/bin/sh
+SITE=${1:-1}
+
+stl2raw | bb load
+
+
