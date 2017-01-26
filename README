@@ -1,0 +1,35 @@
+README for package: custom_dpg
+
+Implements a DIGITAL PATTERN GENERATOR on a DIO432 in site 1
+Possibility for additional sites
+
+DPG may be programmed in any of 3 ways:
+
+1. RAW data pattern : 4 bytes per clock, 4MB/s at 1MHz update
+2. STL State Transition List : COUNT_UNTIL, NEW_STATE
+3. DSD Digital Signal Definition : per-line waveform definition [TBD]
+
+Control by connecting to sockets at fixed ports:
+
+4501 : write raw DPG data for site 1 here
+4511 : read back the raw DPG data
+4521 : write STL definition for site 1 here
+4531 : read back the STL definition for site 1 here
+4541 : write the DSD for site 1 here [future]
+4551 : read back the DSD for site one here [future]
+
+Boot time customisation for 1xDIO432:
+
+cat /mnt/local/acq420_custom
+DRVR_CUSTOM="default_dma_direction=1 xo_use_bigbuf=1 dio432_rowback=0"
+
+cat /mnt/local/rc.user
+set.site 0 SYS:CLK:FPMUX=FPCLK
+set.site 1 clk 1,0,1
+set.site 1 trg 1,0,1
+set.site 1 byte_is_output 1,1,1,1
+echo 1 > /sys/module/acq420fmc/parameters/xo_use_distributor
+play0 1
+
+
+

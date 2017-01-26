@@ -1,0 +1,5 @@
+STL=${1:-/mnt/local/stl-10s-p1}
+nc localhost 4521 < $STL
+nc localhost 4531
+ 
+

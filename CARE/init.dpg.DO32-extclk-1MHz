@@ -1,0 +1,16 @@
+#!/bin/sh
+set.site 1 byte_is_output=1,1,1,1     # set all outputs
+set.site 1 mode=2            # clocked mode.
+
+# assumes 1MHz EXT CLK and an EXT TRG signal attached.
+
+set.site 0 SYS:CLK:FPMUX FPCLK        # route front panel LEMO to d0
+set.site 1 clk=1,0,1            # external CLK, d0, rising
+set.site 1 trg=1,0,1            # external TRG, d0, rising.
+
+#For initial choice of pattern, I'd recommend a ramp.
+#ramp 131000 1 4 > /dev/acq400.1.awg
+
+#If you missed it, you can make a continuous DPG which is easier to see:
+#ramp 131000 1 4 > /dev/acq400.1.awgc
+
