@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
 
@@ -35,6 +36,12 @@ int main(int argc, char* argv[])
 	int nstate = 0;
 	int nstate0 = 0;
 	int nl = 0;
+	int fill = 1;
+
+	if (getenv("STL2RAW_NOFILL")){
+		fill = 0;
+	}
+
 
 	if (argc > 1){
 		fp_out = fopen(argv[1], "w");
@@ -83,5 +90,7 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 	}
-	fill_buffer(abs_count, old_state, nstate);
+	if (fill){
+		fill_buffer(abs_count, old_state, nstate);
+	}
 }
