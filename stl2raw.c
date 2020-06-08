@@ -92,5 +92,7 @@ int main(int argc, char* argv[])
 	}
 	if (fill){
 		fill_buffer(abs_count, old_state, nstate);
+	}else{
+		fwrite(old_state, sizeof(unsigned), nstate, fp_out);
 	}
 }
