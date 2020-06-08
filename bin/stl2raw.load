@@ -2,5 +2,6 @@
 SITE=${1:-1}
 STATE=$(get.site $SITE dpg_status | awk '{ print $1 }')
 [ $STATE -eq 0 ] && stl2raw | bb load
+echo quit on EOF
 
 
