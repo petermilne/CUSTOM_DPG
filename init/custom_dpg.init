@@ -18,7 +18,7 @@ cat - >/etc/inetd.dpg.conf <<EOF
 #4541 stream tcp nowait root sigdef2raw sigdef2raw /dev/acq400.SITE.awg
 #4551 stream tcp nowait root cat cat /tmp/acq400.SITE.awg.worktodo
 EOF
-sed -ie "s/SITE/$SITE/g" /etc/inetd.dpg.conf
+sed -i "s/SITE/$SITE/g" /etc/inetd.dpg.conf
 
 inetd /etc/inetd.dpg.conf
 
