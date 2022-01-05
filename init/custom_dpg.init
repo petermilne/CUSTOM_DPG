@@ -1,13 +1,24 @@
 #!/bin/sh
 
+eval $(get.site 0 distributor)
+SITE=${sites%,*}
+case $SITE in
+1|2|3|4|5|6)
+	;;
+*)
+	echo "ERROR: play not set assume site 1"
+	SITE=1;;
+esac
+
 cat - >/etc/inetd.dpg.conf <<EOF
-4501 stream tcp nowait root stdin2file stdin2file /dev/acq400.1.awg
-4511 stream tcp nowait root cat cat /dev/acq400.1.awg
-4521 stream tcp nowait root stl2raw.load stl2raw.load 1
-4531 stream tcp nowait root bb.sha1sum bb.sha1sum 1
-#4541 stream tcp nowait root sigdef2raw sigdef2raw /dev/acq400.1.awg
-#4551 stream tcp nowait root cat cat /tmp/acq400.1.awg.worktodo
+4501 stream tcp nowait root stdin2file stdin2file /dev/acq400.SITE.awg
+4511 stream tcp nowait root cat cat /dev/acq400.SITE.awg
+4521 stream tcp nowait root stl2raw.load stl2raw.load SITE
+4531 stream tcp nowait root bb.sha1sum bb.sha1sum SITE
+#4541 stream tcp nowait root sigdef2raw sigdef2raw /dev/acq400.SITE.awg
+#4551 stream tcp nowait root cat cat /tmp/acq400.SITE.awg.worktodo
 EOF
+sed -ie "s/SITE/$SITE/g" /etc/inetd.dpg.conf
 
 inetd /etc/inetd.dpg.conf
 
