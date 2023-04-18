@@ -8,7 +8,8 @@ PACKAGES=../../PACKAGES
 ./make.zynq	stl2raw
 
 rm -Rf opkg/*
-mkdir -p opkg/usr/local/bin \
+mkdir -p release \
+	opkg/usr/local/bin \
 	opkg/usr/local/init \
 	opkg/usr/local/CARE \
 	opkg/usr/local/awgdata 
